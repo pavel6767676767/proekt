@@ -1,5 +1,5 @@
-from app.routes.categories import router as categories_router
-from app.routes.products import router as products_router
-from app.routes.cart import router as cart_router
+from app.routes.about import router as about_router
+from app.routes.machines import router as machines_router
+from app.routes.zones import router as zones_router
 
-__all__ = ["categories_router", "products_router", "cart_router"]
+__all__ = ["about_router", "zones_router", "machines_router"]

@@ -1,4 +1,4 @@
-from app.models.category import Category
-from app.models.product import Product
+from app.models.machine import Machine
+from app.models.zone import Zone
 
-__all__ = ["Category", "Product"]
+__all__ = ["Zone", "Machine"]
