@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.database import init_db
-from app.routes import about_router, machines_router, zones_router
+from app.routes import about_router, admin_router, machines_router, zones_router
 
 
 @asynccontextmanager
@@ -32,6 +32,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static", check_dir=False), name="static")
 
 app.include_router(about_router)
+app.include_router(admin_router)
 app.include_router(zones_router)
 app.include_router(machines_router)
 

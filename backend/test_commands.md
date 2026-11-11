@@ -1,15 +1,13 @@
-# API smoke checks
+# Быстрая проверка API
 
-Start API: `python run.py`. Browse Swagger at `http://localhost:8000/api/docs`.
+Запустите `python run.py` и в другом терминале проверьте:
 
-```sh
-curl http://localhost:8000/health
-curl http://localhost:8000/api/categories
-curl 'http://localhost:8000/api/products?category_id=1'
-curl http://localhost:8000/api/products/1
-curl -X POST http://localhost:8000/api/cart/add -H 'Content-Type: application/json' -d '{"product_id":1,"quantity":2,"items":[]}'
-curl -X PUT http://localhost:8000/api/cart/update -H 'Content-Type: application/json' -d '{"product_id":1,"quantity":1,"items":[{"product_id":1,"quantity":2}]}'
-curl -X POST http://localhost:8000/api/cart/remove/1 -H 'Content-Type: application/json' -d '{"items":[{"product_id":1,"quantity":1}]}'
+```powershell
+Invoke-RestMethod http://localhost:8000/health
+Invoke-RestMethod http://localhost:8000/api/about
+Invoke-RestMethod http://localhost:8000/api/zones
+Invoke-RestMethod http://localhost:8000/api/machines
+Invoke-RestMethod 'http://localhost:8000/api/machines?search=3D'
 ```
 
-Cart endpoints are stateless: send the complete client-side cart in `items` on each request. The delete endpoint also accepts the current cart as repeated JSON query values, so clients may instead update their local cart and send its new content to `GET /api/cart`.
+Для управления каталогом передавайте HTTP Basic Auth с логином и паролем из `backend/.env`. Например, в Postman выберите Authorization → Basic Auth. Проверка данных входа: `POST http://localhost:8000/api/admin/login` с JSON `{"username":"...","password":"..."}`. Все операции изменения каталога требуют тот же Basic Auth.

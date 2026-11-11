@@ -1,47 +1,37 @@
-"""Заполняет базу ПРИМЕРАМИ. Замени данные на реальные станки 5 этажа.
+"""Идемпотентно добавляет стартовые зоны и учебное оборудование."""
 
-Запуск из папки backend:  python -m app.seed
-"""
 from app.database import SessionLocal, init_db
 from app.models import Machine, Zone
 
-DATA = {
-    "3D-печать": {
-        "description": "Печатаем прототипы и детали для проектов.",
-        "machines": [
-            {
-                "name": "3D-принтер (пример)",
-                "description": "Замени на реальную модель.",
-                "specs": {"Технология": "FDM", "Материалы": "PLA, PETG"},
-                "quantity": 2,
-            },
-        ],
-    },
-    "Лазерная резка": {
-        "description": "Резка и гравировка фанеры, акрила, картона.",
-        "machines": [
-            {
-                "name": "Лазерный станок (пример)",
-                "description": "Замени на реальную модель.",
-                "specs": {"Материалы": "фанера, акрил"},
-            },
-        ],
-    },
-}
+ITEMS = [
+    ("Автоматизация", "Учебный макет «Умной теплицы»", "Миниатюрная теплица с датчиками и исполнительными механизмами. Учит основам IoT и автоматического управления микроклиматом.", 1),
+    ("Робототехника", "Учебный робот-манипулятор Dobot Magician", "Настольная роботизированная рука для изучения кинематики, программирования и автоматизации.", 1),
+    ("3D-печать", "3D-принтер Dobot MOOZ-3", "FDM-принтер для изготовления прототипов, моделей и деталей учебных проектов.", 1),
+    ("Авиамоделирование", "Учебный квадрокоптер", "Программируемый дрон для изучения полёта, навигации и управления беспилотными системами.", 1),
+    ("3D-печать", "3D-принтер Dobot MOOZ-2 PLUS", "Настольный FDM-принтер для обучения 3D-моделированию и печати.", 1),
+    ("3D-сканирование", "3D-сканер RangeVision", "Оцифровывает физические объекты для реверс-инжиниринга, дизайна и контроля качества.", 1),
+    ("Станки", "Мини-токарный станок KAS SPV-350", "Компактный токарный станок для обработки небольших заготовок и обучения токарному делу.", 1),
+    ("Станки", "Настольный фрезерный станок с ЧПУ", "Фрезеровка и гравировка по управляющей программе; знакомство с G-кодом.", 1),
+    ("Робототехника", "Робот DJI RoboMaster", "Учебный робот с камерой для программирования, компьютерного зрения и командных проектов.", 1),
+]
 
 
 def run() -> None:
     init_db()
     with SessionLocal() as db:
-        if db.query(Zone).first():
-            print("В базе уже есть данные, ничего не добавляю.")
-            return
-        for zone_name, zone_data in DATA.items():
-            zone = Zone(name=zone_name, description=zone_data["description"])
-            zone.machines = [Machine(**m) for m in zone_data["machines"]]
-            db.add(zone)
+        zones = {zone.name: zone for zone in db.query(Zone).all()}
+        for name, *_ in ITEMS:
+            if name not in zones:
+                zone = Zone(name=name, description=f"Оборудование: {name.lower()}.")
+                db.add(zone)
+                zones[name] = zone
+        db.flush()
+        existing_names = {machine.name for machine in db.query(Machine).all()}
+        for zone_name, name, description, quantity in ITEMS:
+            if name not in existing_names:
+                db.add(Machine(name=name, description=description, quantity=quantity, zone_id=zones[zone_name].id))
         db.commit()
-        print("Готово: примеры добавлены.")
+    print("Стартовые зоны и оборудование добавлены (существующие записи сохранены).")
 
 
 if __name__ == "__main__":

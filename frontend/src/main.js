@@ -5,9 +5,11 @@ import App from './App.vue'
 import CatalogView from './views/CatalogView.vue'
 import ProductView from './views/ProductView.vue'
 import './style.css'
+import './edu.css'
 
 const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/', component: CatalogView },
-  { path: '/products/:id', component: ProductView },
+  { path: '/machines/:id', component: ProductView },
+  { path: '/admin', component: () => import('./views/AdminView.vue') },
 ] })
 createApp(App).use(createPinia()).use(router).mount('#app')
